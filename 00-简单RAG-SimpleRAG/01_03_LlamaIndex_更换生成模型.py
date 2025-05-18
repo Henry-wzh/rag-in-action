@@ -19,7 +19,7 @@ load_dotenv()
 
 # 创建 Deepseek LLM（通过API调用最新的DeepSeek大模型）
 llm = DeepSeek(
-    model="deepseek-reasoner", # 使用最新的推理模型R1
+    model="deepseek-chat",  # 使用最新的推理模型R1
     api_key=os.getenv("DEEPSEEK_API_KEY")  # 从环境变量获取API key
 )
 
@@ -31,7 +31,6 @@ index = VectorStoreIndex.from_documents(
     documents,
     # llm=llm  # 设置构建索引时的语言模型（一般不需要）
 )
-
 # 创建问答引擎
 query_engine = index.as_query_engine(
     llm=llm  # 设置生成模型
