@@ -37,7 +37,6 @@ prompt = ChatPromptTemplate.from_template("""
 回答:""")
 
 # 7. 设置语言模型和输出解析器
-from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
