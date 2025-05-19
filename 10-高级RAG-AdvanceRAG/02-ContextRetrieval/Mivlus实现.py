@@ -7,7 +7,7 @@
 """
 
 # 导入必要的库
-from pymilvus.model.dense import VoyageEmbeddingFunction
+from pymilvus.model.dense import SentenceTransformerEmbeddingFunction
 from pymilvus.model.hybrid import BGEM3EmbeddingFunction
 from pymilvus.model.reranker import CohereRerankFunction
 
@@ -23,7 +23,8 @@ from tqdm import tqdm
 import json
 import anthropic
 import os
-
+import dotenv
+dotenv.load_dotenv()
 
 class MilvusContextualRetriever:
     """
@@ -164,7 +165,7 @@ class MilvusContextualRetriever:
         你的回答应该包含<块>的完整内容，并确保语义连贯。只返回丰富后的文本内容，不要添加任何说明或解释。
         """
         
-        message = self.anthropic_client.messages.create(
+        message = self.anthropic_client.messages.create( 
             model="claude-3-haiku-20240307",
             max_tokens=1000,
             temperature=0,
@@ -208,46 +209,14 @@ class MilvusContextualRetriever:
         # 生成查询的嵌入向量
         dense_vec = self.embedding_function([query])[0]
         
-        # 准备搜索请求
-        if self.use_sparse is True:
-            sparse_vec = self.sparse_embedding_function([query])[0]
-            
-            # 创建混合搜索请求
-            dense_req = AnnSearchRequest(
-                "dense_vector", 
-                [],
-                anns_field="dense_vector", 
-                topk=k,
-                params=search_params,
-                embedding=dense_vec,
-            )
-            sparse_req = AnnSearchRequest(
-                "sparse_vector", 
-                [],
-                anns_field="sparse_vector", 
-                topk=k,
-                params=search_params,
-                embedding=sparse_vec,
-            )
-            
-            # 执行混合搜索
-            res = self.client.hybrid_search(
-                collection_name=self.collection_name,
-                reqs=[dense_req, sparse_req],
-                output_fields=["content", "contextualized_content"],
-                limit=k,
-                # 使用RRF排名方法合并结果
-                ranker=RRFRanker(k=60),
-            )
-        else:
-            # 执行标准密集向量搜索
-            res = self.client.search(
-                collection_name=self.collection_name,
-                data=[dense_vec],
-                limit=k,
-                output_fields=["content", "contextualized_content"],
-                search_params=search_params,
-            )
+        # 执行标准密集向量搜索
+        res = self.client.search(
+            collection_name=self.collection_name,
+            data=[dense_vec],
+            limit=k,
+            output_fields=["content", "contextualized_content"],
+            search_params=search_params,
+        )
         
         # 使用重排序器进一步优化结果
         if self.use_reranker:
@@ -263,8 +232,8 @@ class MilvusContextualRetriever:
             
             # 根据重排序结果重新排序原始结果
             reranked_results = []
-            for i in range(len(rerank_results)):
-                idx = rerank_results[i]["index"]
+            for result in rerank_results:
+                idx = result.index  # 使用 .index 属性而不是字典访问
                 reranked_results.append(res[0][idx])
             
             res = [reranked_results]
@@ -407,9 +376,8 @@ def download_data():
 def main():
     """主函数 - 运行所有实验"""
     # 替换这些为你的实际API密钥
-    voyage_api_key = "YOUR_VOYAGE_API_KEY"
-    cohere_api_key = "YOUR_COHERE_API_KEY"
-    anthropic_api_key = "YOUR_ANTHROPIC_API_KEY"
+    cohere_api_key = os.getenv("COHERE_API_KEY")
+    anthropic_api_key = os.getenv("CLAUDE_API_KEY")
     
     # 下载数据
     download_data()
@@ -419,9 +387,11 @@ def main():
     with open("codebase_chunks.json", "r") as f:
         dataset = json.load(f)
     
+    # 只使用前5个文档进行测试
+    dataset = dataset[:5]
+    
     # 初始化模型
-    dense_ef = VoyageEmbeddingFunction(api_key=voyage_api_key, model_name="voyage-2")
-    sparse_ef = BGEM3EmbeddingFunction()
+    dense_ef = SentenceTransformerEmbeddingFunction(model_name='BAAI/bge-large-zh')  # 使用中文优化的模型
     cohere_rf = CohereRerankFunction(api_key=cohere_api_key)
     anthropic_client = anthropic.Anthropic(api_key=anthropic_api_key)
     
@@ -447,42 +417,31 @@ def main():
             chunk_content = chunk["content"]
             standard_retriever.insert_data(chunk_content, metadata)
     
+    # 创建简单的评估数据
+    eval_data = []
+    for doc in dataset[:2]:  # 只使用前2个文档进行评估
+        for chunk in doc["chunks"][:2]:  # 每个文档只取前2个块
+            eval_data.append({
+                "query": chunk["content"][:50],  # 使用块内容的前50个字符作为查询
+                "references": [{
+                    "doc_uuid": doc["original_uuid"],
+                    "chunk_index": chunk["original_index"]
+                }]
+            })
+    
+    # 保存评估数据
+    with open("evaluation_set.jsonl", "w") as f:
+        for item in eval_data:
+            f.write(json.dumps(item, ensure_ascii=False) + "\n")
+    
     standard_results = evaluate_db(standard_retriever, "evaluation_set.jsonl", 5)
     
-    # 实验二：混合检索
-    print("\n===== 实验二：混合检索 =====")
-    hybrid_retriever = MilvusContextualRetriever(
-        uri="hybrid.db",
-        collection_name="hybrid",
-        dense_embedding_function=dense_ef,
-        use_sparse=True,
-        sparse_embedding_function=sparse_ef,
-    )
-    
-    hybrid_retriever.build_collection()
-    for doc in tqdm(dataset, desc="插入混合检索数据"):
-        doc_content = doc["content"]
-        for chunk in doc["chunks"]:
-            metadata = {
-                "doc_id": doc["doc_id"],
-                "original_uuid": doc["original_uuid"],
-                "chunk_id": chunk["chunk_id"],
-                "original_index": chunk["original_index"],
-                "content": chunk["content"],
-            }
-            chunk_content = chunk["content"]
-            hybrid_retriever.insert_data(chunk_content, metadata)
-    
-    hybrid_results = evaluate_db(hybrid_retriever, "evaluation_set.jsonl", 5)
-    
-    # 实验三：上下文检索
-    print("\n===== 实验三：上下文检索 =====")
+    # 实验二：上下文检索
+    print("\n===== 实验二：上下文检索 =====")
     contextual_retriever = MilvusContextualRetriever(
         uri="contextual.db",
         collection_name="contextual",
         dense_embedding_function=dense_ef,
-        use_sparse=True,
-        sparse_embedding_function=sparse_ef,
         use_contextualize_embedding=True,
         anthropic_client=anthropic_client,
     )
@@ -505,8 +464,8 @@ def main():
     
     contextual_results = evaluate_db(contextual_retriever, "evaluation_set.jsonl", 5)
     
-    # 实验四：带重排序的上下文检索
-    print("\n===== 实验四：带重排序的上下文检索 =====")
+    # 实验三：带重排序的上下文检索
+    print("\n===== 实验三：带重排序的上下文检索 =====")
     contextual_retriever.use_reranker = True
     contextual_retriever.rerank_function = cohere_rf
     
@@ -515,7 +474,6 @@ def main():
     # 打印所有结果比较
     print("\n===== 所有实验结果比较 =====")
     print(f"标准检索 Pass@5: {standard_results['pass_at_n']:.2f}%")
-    print(f"混合检索 Pass@5: {hybrid_results['pass_at_n']:.2f}%")
     print(f"上下文检索 Pass@5: {contextual_results['pass_at_n']:.2f}%")
     print(f"带重排序的上下文检索 Pass@5: {reranker_results['pass_at_n']:.2f}%")
 

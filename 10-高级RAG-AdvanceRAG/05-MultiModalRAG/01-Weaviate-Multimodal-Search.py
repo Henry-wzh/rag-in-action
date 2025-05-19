@@ -64,21 +64,23 @@ for name in image_files:
 #     })
 
 # 文本搜索示例
+query = "Monkey with fire"
 response = monkey.query.near_text(
-    query="Monkey with fire",
+    query=query,
     return_properties=["name", "path", "mediaType"],
     limit=3
 )
-print("与当前Query相似的对象有：")
+print(f"与查询词 '{query}' 相似的对象有：")
 for obj in response.objects:
     print(obj.properties)
 
+query = "Monsters"
 response = monkey.query.near_text(
-    query="Monsters",
+    query=query,
     return_properties=["name", "path", "mediaType"],
     limit=3
 )
-print("与当前Query相似的对象有：")
+print(f"与查询词 '{query}' 相似的对象有：")
 for obj in response.objects:
     print(obj.properties)
 

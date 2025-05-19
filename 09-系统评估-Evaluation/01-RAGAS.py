@@ -7,7 +7,7 @@ from ragas.metrics import Faithfulness, AnswerRelevancy
 from ragas.llms import LangchainLLMWrapper
 from ragas.embeddings import LangchainEmbeddingsWrapper
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
-from ragas.embeddings import HuggingfaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from ragas import evaluate
 
 # 准备评估用的LLM（使用GPT-3.5）
@@ -64,7 +64,7 @@ print(f"忠实度评分: {mean_score:.4f}")
 
 # 设置两种embedding模型
 opensource_embedding = LangchainEmbeddingsWrapper(
-    HuggingfaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 )
 openai_embedding = LangchainEmbeddingsWrapper(OpenAIEmbeddings(model="text-embedding-ada-002"))
 
@@ -91,3 +91,41 @@ diff = openai_mean - opensource_mean
 print(f"开源模型评分: {opensource_mean:.4f}")
 print(f"OpenAI模型评分: {openai_mean:.4f}")
 print(f"差异: {diff:.4f} ({'OpenAI更好' if diff > 0 else '开源模型更好' if diff < 0 else '相当'})")
+
+
+'''
+我做了以下修改：
+移除了 ragas.embeddings.base 中的 HuggingfaceEmbeddings 导入
+改为导入 LangChain 的 HuggingFaceEmbeddings
+使用 LangchainEmbeddingsWrapper 来包装 LangChain 的 HuggingFaceEmbeddings
+这样做的原因是：
+LangChain 的 HuggingFaceEmbeddings 是一个完整的实现，包含了所有必要的方法
+LangchainEmbeddingsWrapper 会将 LangChain 的嵌入模型适配到 RAGAS 的接口
+这个包装器会自动处理同步和异步方法的转换
+
+1. Faithfulness（忠实度）
+- 评估生成的答案是否忠实于上下文内容
+- 通过将答案分解为简单陈述，然后验证每个陈述是否可以从上下文中推断得出
+- 该指标仅依赖LLM，不需要embedding模型
+
+正在评估忠实度...
+Evaluating: 100%|███████████████████████████████████████████████████████████████████████████████████████| 3/3 [00:05<00:00,  1.87s/it]
+忠实度评分: 0.6071
+
+正在评估答案相关性...
+
+使用开源Embedding模型评估:
+Evaluating: 100%|███████████████████████████████████████████████████████████████████████████████████████| 3/3 [00:01<00:00,  1.54it/s]
+相关性评分: 0.8565
+
+使用OpenAI Embedding模型评估:
+Evaluating: 100%|███████████████████████████████████████████████████████████████████████████████████████| 3/3 [00:06<00:00,  2.11s/it]
+相关性评分: 0.9426
+
+=== Embedding模型比较 ===
+开源模型评分: 0.8565
+OpenAI模型评分: 0.9426
+差异: 0.0861 (OpenAI更好)
+
+
+'''

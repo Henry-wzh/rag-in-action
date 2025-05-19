@@ -15,7 +15,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langgraph.graph import END, StateGraph, START
 
-# ----- 0. 安装依赖（注释版） -----
+# ----- 0. 安装依赖 -----
 # pip install -U langchain_community tiktoken langchain-openai langchain-cohere \
 #         langchainhub chromadb langchain langgraph tavily-python
 
@@ -34,8 +34,8 @@ embd = OpenAIEmbeddings()
 # 2.2 文档来源 URL 列表
 urls = [
     "https://lilianweng.github.io/posts/2023-06-23-agent/",
-    "https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/",
-    "https://lilianweng.github.io/posts/2023-10-25-adv-attack-llm/",
+    # "https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/",
+    # "https://lilianweng.github.io/posts/2023-10-25-adv-attack-llm/",
 ]
 # 2.3 加载并拆分文档
 docs = [WebBaseLoader(url).load() for url in urls]
@@ -183,7 +183,6 @@ wf.add_node("grade_documents", grade_docs_node)
 wf.add_node("transform_query", transform_query_node)
 wf.add_node("web_search", web_search_node)
 wf.add_node("generate", generate_node)
-wf.add_node("grade_generation", grade_generation_node)
 
 # 路由条件
 wf.add_conditional_edges(
@@ -212,7 +211,10 @@ wf.add_conditional_edges(
 app = wf.compile()
 try:
     # 先获取 PNG 二进制数据
-    png_data = app.get_graph(xray=True).draw_mermaid_png()
+    from langchain_core.runnables.graph import MermaidDrawMethod
+    png_data = app.get_graph(xray=True).draw_mermaid_png(
+        draw_method=MermaidDrawMethod.PYPPETEER  # 使用本地浏览器渲染，无需外部服务
+    )
 
     # 将二进制数据保存到当前目录下的 graph.png
     with open("10-高级RAG-AdvanceRAG/04-AgenticRAG/AdaptiveRAG-Graph.png", "wb") as f:
@@ -224,12 +226,18 @@ except Exception as e:
 
 
 # ----- 11. 运行示例 -----
-if __name__ == "__main__":
-    for q in [
-        # "What player at the Bears expected to draft first in the 2024 NFL draft?",
-        # "What are the types of agent memory?"
-    ]:
-        print(f"\n=== 问题: {q} ===")
-        for out in app.stream({"question": q}):
-            pprint(out)
-        print("=== 回答结束 ===\n")
+for q in [
+    # "Who is the president of the United States?",
+    "智能体有哪些类型的记忆?"
+]:
+    print("\n" + "="*50)
+    print(f"问题: {q}")
+    print("="*50)
+    
+    result = app.invoke({"question": q})
+    print("\n[生成的回答]")
+    print("-"*30)
+    print(result["generation"])
+    print("-"*30)
+    
+    print("\n" + "="*50 + "\n")

@@ -61,6 +61,7 @@ grade_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+# 检索评分器及简单测试
 retrieval_grader = grade_prompt | structured_llm_grader
 question = "agent memory"
 docs = retriever.invoke(question)
@@ -363,38 +364,38 @@ workflow.add_conditional_edges(
 
 # 编译
 app = workflow.compile()
-try:
-    # 先获取 PNG 二进制数据
-    png_data = app.get_graph(xray=True).draw_mermaid_png()
+# try:
+#     # 先获取 PNG 二进制数据
+#     png_data = app.get_graph(xray=True).draw_mermaid_png()
 
-    # 将二进制数据保存到当前目录下的 graph.png
-    with open("08-响应生成-Generation/04-动态生成优化策略/graph.png", "wb") as f:
-        f.write(png_data)
+#     # 将二进制数据保存到当前目录下的 graph.png
+#     with open("08-响应生成-Generation/04-动态生成优化策略/graph.png", "wb") as f:
+#         f.write(png_data)
 
-    print("已保存为：graph.png")
-except Exception as e:
-    print(f"保存图片时出错: {e}")
+#     print("已保存为：graph.png")
+# except Exception as e:
+#     print(f"保存图片时出错: {e}")
 
-from pprint import pprint
+# from pprint import pprint
 
-# 运行示例1
-inputs = {"question": "解释不同类型的智能体记忆是如何工作的？"}
-for output in app.stream(inputs):
-    for key, value in output.items():
-        # 节点
-        pprint(f"节点 '{key}':")
-    pprint("\n---\n")
+# # 运行示例1
+# inputs = {"question": "解释不同类型的智能体记忆是如何工作的？"}
+# for output in app.stream(inputs):
+#     for key, value in output.items():
+#         # 节点
+#         pprint(f"节点 '{key}':")
+#     pprint("\n---\n")
 
-# 最终生成
-pprint(value["generation"])
+# # 最终生成
+# pprint(value["generation"])
 
-# 运行示例2
-inputs = {"question": "解释思维链提示是如何工作的？"}
-for output in app.stream(inputs):
-    for key, value in output.items():
-        # 节点
-        pprint(f"节点 '{key}':")
-    pprint("\n---\n")
+# # 运行示例2
+# inputs = {"question": "解释思维链提示是如何工作的？"}
+# for output in app.stream(inputs):
+#     for key, value in output.items():
+#         # 节点
+#         pprint(f"节点 '{key}':")
+#     pprint("\n---\n")
 
-# 最终生成
-pprint(value["generation"])
+# # 最终生成
+# pprint(value["generation"])
