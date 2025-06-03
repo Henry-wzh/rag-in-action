@@ -107,7 +107,10 @@ def agent(state: AgentState) -> AgentState:
     msgs = state.get('messages') or []
     if not msgs:
         raise ValueError("agent节点调用时消息列表为空，无法生成回复。请检查上游节点输出。")
-    response = model.invoke(msgs)
+    
+    # 添加系统消息来指导使用检索工具
+    system_msg = HumanMessage(content="请使用检索工具来回答问题。")
+    response = model.invoke([system_msg] + msgs)
     return {
         "messages": msgs + [response],
         "retrieval_done": False,
@@ -119,7 +122,9 @@ def agent(state: AgentState) -> AgentState:
 def should_use_tools(state: AgentState) -> str:
     msgs = state['messages']
     last_msg = msgs[-1]
-    if hasattr(last_msg, "tool_calls") and last_msg.tool_calls:
+    # 检查消息内容是否包含工具调用或是否需要检索
+    if (hasattr(last_msg, "tool_calls") and last_msg.tool_calls) or \
+       (isinstance(last_msg.content, str) and "retrieve" in last_msg.content.lower()):
         return "retrieve"
     return "end"
 
@@ -200,21 +205,31 @@ inputs = {
 final_output = None
 for output in app.stream(inputs):
     print("\n=== 节点输出 ===")
-    pprint(output)
+    # 打印每个节点的名称和状态
+    for node_name, state in output.items():
+        print(f"\n节点名称: {node_name}")
+        if state and "messages" in state:
+            print("最新消息:", state["messages"][-1].content)
+        print(f"检索状态: {state.get('retrieval_done')}")
+        print(f"评分状态: {state.get('graded')}")
+        print(f"评分结果: {state.get('grade_result')}")
     print("===============")
     final_output = output
 
 # 打印最终回答
-if final_output and 'generate' in final_output:
-    state = final_output['generate']
-    if state and "messages" in state:
+if final_output:
+    # 检查所有可能的最终节点
+    final_state = None
+    for node in ["generate", "agent"]:
+        if node in final_output:
+            final_state = final_output[node]
+            break
+            
+    if final_state and "messages" in final_state:
         print("\n=== 最终回答 ===")
-        print(state["messages"][-1].content)
+        print(final_state["messages"][-1].content)
         print("===============")
     else:
         print("\n=== 错误：状态中未找到消息 ===")
 else:
-    print("\n=== 错误：未能获取最终回答 ===")
-
-
-
+    print("\n=== 错误：未能获取最终输出 ===")

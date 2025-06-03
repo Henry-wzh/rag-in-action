@@ -1,4 +1,0 @@
-{"query": "//! Executor for differential fuzzing.\n//! It wrap", "references": [{"doc_uuid": "5e4c01057a10732d34784af2a97bee9d173863f043b9901de8ef7f57bc590145", "chunk_index": 0}]}
-{"query": "impl<A, B, OTA, OTB, DOT> DiffExecutor<A, B, OTA, ", "references": [{"doc_uuid": "5e4c01057a10732d34784af2a97bee9d173863f043b9901de8ef7f57bc590145", "chunk_index": 1}]}
-{"query": "#[cfg(windows)]\nuse std::ptr::write_volatile;\nuse ", "references": [{"doc_uuid": "78cd6ead8e87695b47c2904e3027ae2b7251677caa5c5815b38c8756fe1a0b0c", "chunk_index": 0}]}
-{"query": "/// Coverage map with explicit assignments due to ", "references": [{"doc_uuid": "78cd6ead8e87695b47c2904e3027ae2b7251677caa5c5815b38c8756fe1a0b0c", "chunk_index": 1}]}

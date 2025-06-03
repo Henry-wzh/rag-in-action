@@ -126,6 +126,8 @@ pip install -r "91-环境-Environment/requirements_langchain_无GPU版(Mac,Win).
 
 欢迎提交 Issue 和 Pull Request 来帮助改进项目。
 
+[![佳哥项目 Star History 趋势](https://api.star-history.com/svg?repos=huangjia2019/langchain-in-action,huangjia2019/ai-agents,huangjia2019/let-us-machine-learning,huangjia2019/rag-in-action,huangjia2019/llm-gpt&type=Date)](https://www.star-history.com/#huangjia2019/langchain-in-action&huangjia2019/ai-agents&huangjia2019/let-us-machine-learning&huangjia2019/rag-in-action&huangjia2019/llm-gpt&Date)
+
 ## 许可证
 
 本项目采用 MIT 许可证。

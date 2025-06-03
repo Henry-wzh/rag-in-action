@@ -102,7 +102,6 @@ print(f"差异: {diff:.4f} ({'OpenAI更好' if diff > 0 else '开源模型更好
 LangChain 的 HuggingFaceEmbeddings 是一个完整的实现，包含了所有必要的方法
 LangchainEmbeddingsWrapper 会将 LangChain 的嵌入模型适配到 RAGAS 的接口
 这个包装器会自动处理同步和异步方法的转换
-
 1. Faithfulness（忠实度）
 - 评估生成的答案是否忠实于上下文内容
 - 通过将答案分解为简单陈述，然后验证每个陈述是否可以从上下文中推断得出

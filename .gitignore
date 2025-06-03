@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 *.so
 *.db
+*.sqlite
 *.pth
 .Python
 build/
@@ -71,7 +72,7 @@ Thumbs.db
 data/
 **/data
 
-**/99-其它*/
+**/99_其它*/
 **/RAG_LangChain*/
 **/RAG_LlamaIndex*/
 **/04-向量存储-VectorDB/Milvus/volumes/*
