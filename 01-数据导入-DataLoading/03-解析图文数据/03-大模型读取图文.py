@@ -1,10 +1,16 @@
+import json
+from pyexpat import model
+from re import M
 from pdf2image import convert_from_path
 import base64
 import os
 from openai import OpenAI
 
 # 初始化 OpenAI 客户端
-client = OpenAI()
+client = OpenAI(
+    api_key="ollama",
+    base_url="http://localhost:11434/v1",
+)
 output_dir = "temp_images"
 
 # 1. PDF 转图片
@@ -28,7 +34,7 @@ for image_path in image_paths:
         base64_image = base64.b64encode(image_file.read()).decode('utf-8')
     
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="qwen2.5:7b",
         messages=[
             {
                 "role": "user",
