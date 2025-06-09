@@ -4,14 +4,14 @@ from llama_index.readers.database import DatabaseReader
 # 1. 创建数据库: CREATE DATABASE example_db;
 # 2. 使用数据库: USE example_db;
 # 3. 创建黑神话悟空游戏场景表:
-#    CREATE TABLE game_scenes (
-#      id INT AUTO_INCREMENT PRIMARY KEY,
-#      scene_name VARCHAR(100) NOT NULL,
-#      description TEXT,
-#      difficulty_level INT,
-#      boss_name VARCHAR(100),
-#      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-#    );
+# CREATE TABLE game_scenes(
+#     id INT AUTO_INCREMENT PRIMARY KEY,
+#     scene_name VARCHAR(100) NOT NULL,
+#     description TEXT,
+#     difficulty_level INT,
+#     boss_name VARCHAR(100),
+#     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+# )
 # 4. 插入黑神话悟空游戏场景数据:
 #    INSERT INTO game_scenes (scene_name, description, difficulty_level, boss_name)
 #    VALUES 
@@ -25,8 +25,8 @@ reader = DatabaseReader(
     scheme="mysql",
     host="localhost",
     port=3306,
-    user="newuser",
-    password="password",
+    user="henry",
+    password="123456",
     dbname="example_db"
 )
 
