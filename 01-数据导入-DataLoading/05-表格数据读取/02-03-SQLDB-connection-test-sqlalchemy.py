@@ -2,7 +2,8 @@ from sqlalchemy import create_engine, text
 import pandas as pd
 
 # 确保使用 pymysql 作为驱动
-engine = create_engine("mysql+pymysql://newuser:password@localhost:3306/example_db")
+engine = create_engine(
+    "mysql+pymysql://henry:123456@localhost:3306/example_db")
 
 # 测试连接
 try:

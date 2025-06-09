@@ -1,6 +1,8 @@
+import os
 import pdfplumber
 import pandas as pd
 from llama_index.core import VectorStoreIndex
+from llama_index.llms.deepseek import DeepSeek
 from llama_index.core import Document
 from typing import List
 
@@ -38,7 +40,12 @@ if tables:
 index = VectorStoreIndex.from_documents(documents)
 
 # 创建查询引擎
-query_engine = index.as_query_engine()
+# 创建 Deepseek LLM
+llm = DeepSeek(
+    model="deepseek-chat",
+    api_key=os.getenv("DEEPSEEK_API_KEY")
+)
+query_engine = index.as_query_engine(llm=llm)
 
 # 示例问答
 questions = [
