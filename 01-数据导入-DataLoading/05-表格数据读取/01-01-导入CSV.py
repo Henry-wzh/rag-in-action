@@ -1,6 +1,7 @@
 from langchain_community.document_loaders import CSVLoader
+file_path = "90-文档-Data/黑悟空/黑神话悟空.csv"
+
 # # 第 1 部分: 基本加载 CSV 文件并打印记录
-file_path = "data/黑神话/黑神话悟空.csv"
 # loader = CSVLoader(file_path=file_path)
 # data = loader.load()
 # print("示例 1: 基本加载 CSV 文件并打印前两条记录")
@@ -8,7 +9,7 @@ file_path = "data/黑神话/黑神话悟空.csv"
 #     print(record)
 # print("-" * 80)
 
-# 第 2 部分: 跳过 CSV 文件的标题行并使用自定义列名
+# # 第 2 部分: 跳过 CSV 文件的标题行并使用自定义列名
 # loader = CSVLoader(
 #     file_path=file_path,
 #     csv_args={
@@ -19,14 +20,14 @@ file_path = "data/黑神话/黑神话悟空.csv"
 # )
 # data = loader.load()
 
-# print("示例 2: 跳过标题行并使用自定义列名")
+# # print("示例 2: 跳过标题行并使用自定义列名")
 # for record in data[:2]:
 #     print(record)
 # print("-" * 80)
 
 
 # # 第 3 部分: 指定 "Name" 列作为 source_column
-# loader = CSVLoader(file_path=file_path, source_column="Name")
+# loader = CSVLoader(file_path=file_path, source_column="Category")
 # data = loader.load()
 
 # print("示例 3: 使用 'Name' 列作为主要内容来源")
@@ -36,6 +37,7 @@ file_path = "data/黑神话/黑神话悟空.csv"
 
 
 # 第 4 部分: 使用 UnstructuredCSVLoader 加载 CSV 文件
+# 无法把每一行数据作为单独的文档，而是作为一个整体，失去了结构性
 from langchain_community.document_loaders import UnstructuredCSVLoader
 loader = UnstructuredCSVLoader(file_path=file_path)
 data = loader.load()
