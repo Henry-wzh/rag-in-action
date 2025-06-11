@@ -38,3 +38,6 @@ pdf.close()
 # 记录结束时间并计算总耗时
 end_time = time.time()
 print(f"\nPDF表格提取总耗时: {end_time - start_time:.2f}秒")
+
+# 全面的表格提取，包含页面边缘表格
+# 速度快，但上下文数据丢失
