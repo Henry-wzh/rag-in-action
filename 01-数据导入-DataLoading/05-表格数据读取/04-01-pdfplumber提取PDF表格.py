@@ -1,7 +1,7 @@
 import pdfplumber
 import pandas as pd
 import time
-
+# 提取表格数据，没有上下文数据
 # 记录开始时间
 start_time = time.time()
 
