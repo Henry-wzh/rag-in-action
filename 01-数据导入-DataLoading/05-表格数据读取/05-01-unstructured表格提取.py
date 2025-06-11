@@ -43,4 +43,4 @@ for element in elements:
 text_elements = [el for el in elements if el.category == "Text"]
 table_elements = [el for el in elements if el.category == "Table"]
 
-
+# 元数据中包含表格的父节点信息，可以用来关联表格和其父节点。
