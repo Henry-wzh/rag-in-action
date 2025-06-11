@@ -28,7 +28,7 @@ if tables:
         
         # 保存到CSV文件
         csv_filename = f"billionaires_table_{i}.csv"
-        df.to_csv(csv_filename, index=False)
+        # df.to_csv(csv_filename, index=False)
         print(f"\n表格 {i} 数据已保存到 {csv_filename}")
 
 
