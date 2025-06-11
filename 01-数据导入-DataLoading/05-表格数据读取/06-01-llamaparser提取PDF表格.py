@@ -33,3 +33,8 @@ print("\n解析后的文档内容:")
 for i, doc in enumerate(documents, 1):
     print(f"\n文档 {i} 内容:")
     print(doc.text)
+
+# 需要调用api，商业需要付费
+# 上下文信息
+# 标题，会有markdown格式
+# 表头可能会识别错误
