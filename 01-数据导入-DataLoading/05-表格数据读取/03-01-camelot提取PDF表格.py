@@ -2,6 +2,8 @@ import camelot
 import pandas as pd
 # from ctypes.util import find_library
 # find_library("gs")
+# 上下文数据提取，元数据提取
+# 只是提取出表格数据，没有上下文数据
 
 pdf_path = "90-文档-Data/复杂PDF/billionaires_page-1-5.pdf"
 import time
