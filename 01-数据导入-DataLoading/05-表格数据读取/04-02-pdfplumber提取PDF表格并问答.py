@@ -5,6 +5,9 @@ from llama_index.core import VectorStoreIndex
 from llama_index.llms.deepseek import DeepSeek
 from llama_index.core import Document
 from typing import List
+from llama_index.core import Settings
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+
 
 pdf_path = "90-文档-Data/复杂PDF/billionaires_page-1-5.pdf"
 
@@ -36,16 +39,30 @@ if tables:
         doc = Document(text=text, metadata={"source": f"表格{i}"})
         documents.append(doc)
 
-# 构建索引
-index = VectorStoreIndex.from_documents(documents)
-
 # 创建查询引擎
 # 创建 Deepseek LLM
 llm = DeepSeek(
     model="deepseek-chat",
-    api_key=os.getenv("DEEPSEEK_API_KEY")
+    api_key=os.getenv("DEEPSEEK_API_KEY"),
+    temperature=0.1,  # 较低的温度使输出更加确定
+    top_p=0.9,             # 控制随机性的另一种方式
+    request_timeout=120,   # API 请求超时时间（秒）
+    max_tokens=1024,  # 生成回复的token数
 )
-query_engine = index.as_query_engine(llm=llm)
+# llm = OpenAI(
+#     api_key=os.getenv("DEEPSEEK_API_KEY"),
+#     base_url="https://api.deepseek.com/v1",  # DeepSeek API地址
+#     model="deepseek-chat",
+# )
+# 设置全局LLM
+Settings.llm = llm
+# 使用本地 HuggingFace 嵌入模型
+Settings.embed_model = HuggingFaceEmbedding(
+    model_name="BAAI/bge-small-en-v1.5"  # 或其他模型
+)
+# 构建索引
+index = VectorStoreIndex.from_documents(documents)
+query_engine = index.as_query_engine()
 
 # 示例问答
 questions = [
