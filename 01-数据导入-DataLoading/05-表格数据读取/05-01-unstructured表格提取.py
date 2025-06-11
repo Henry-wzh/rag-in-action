@@ -43,4 +43,9 @@ for element in elements:
 text_elements = [el for el in elements if el.category == "Text"]
 table_elements = [el for el in elements if el.category == "Table"]
 
+
 # 元数据中包含表格的父节点信息，可以用来关联表格和其父节点。
+# 表格被页面截断的情况，父节点信息不准确
+# 方法1: 需要使用cleaners过滤页脚信息
+# 方法2: 需要使用coordinates去除页脚
+# 方法3: 使用metadata识别并排除页脚
