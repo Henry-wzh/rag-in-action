@@ -1,3 +1,4 @@
+from transformers import AutoModel, AutoTokenizer
 from llama_index.llms.deepseek import DeepSeek
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
@@ -13,7 +14,9 @@ import os
 
 # embed_model = OpenAIEmbedding(model="text-embedding-3-small")
 llm = DeepSeek(api_key=os.getenv("DEEPSEEK_API_KEY"), model="deepseek-chat")
+# 本地加载模型，离线推理（除非模型未下载）
 embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-m3")
+
 # 50, 100, 250将得到不同的结果，为什么？
 node_parser = SentenceSplitter(chunk_size=250, chunk_overlap=20)
 
