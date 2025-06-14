@@ -3,16 +3,17 @@ from llama_index.core.node_parser import (
     SentenceSplitter,
     SemanticSplitterNodeParser,
 )
-from llama_index.embeddings.openai import OpenAIEmbedding 
-# from llama_index.embeddings.huggingface import HuggingFaceEmbedding 
-# embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-zh")
+# from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+# embed_model = OpenAIEmbedding()
+embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-zh")
 documents = SimpleDirectoryReader(input_files=["90-文档-Data/黑悟空/黑悟空wiki.txt"]).load_data()
 
 # 创建语义分块器
 splitter = SemanticSplitterNodeParser(
     buffer_size=3,  # 缓冲区大小
     breakpoint_percentile_threshold=90, # 断点百分位阈值
-    embed_model=OpenAIEmbedding()     # 使用的嵌入模型
+    embed_model=embed_model  # 使用的嵌入模型
 )
 # 创建基础句子分块器（作为对照）
 base_splitter = SentenceSplitter(

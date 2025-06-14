@@ -1,6 +1,7 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters import Language
-separators = RecursiveCharacterTextSplitter.get_separators_for_language(Language.JAVASCRIPT)
+separators = RecursiveCharacterTextSplitter.get_separators_for_language(
+    Language.PYTHON)
 print(separators)
 
 from langchain_text_splitters import (
