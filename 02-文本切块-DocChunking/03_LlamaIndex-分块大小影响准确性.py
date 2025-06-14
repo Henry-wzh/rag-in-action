@@ -1,5 +1,6 @@
-from llama_index.llms.openai import OpenAI
+from llama_index.llms.deepseek import DeepSeek
 from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core import VectorStoreIndex
 from llama_index.core import Settings
 from llama_index.readers.file import PDFReader
@@ -10,12 +11,16 @@ load_dotenv()
 
 import os
 
-embed_model = OpenAIEmbedding(model="text-embedding-3-small")
-llm = OpenAI(model="gpt-3.5-turbo-0125")
+# embed_model = OpenAIEmbedding(model="text-embedding-3-small")
+llm = DeepSeek(api_key=os.getenv("DEEPSEEK_API_KEY"), model="deepseek-chat")
+embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-m3")
+# 50, 100, 250将得到不同的结果，为什么？
+node_parser = SentenceSplitter(chunk_size=250, chunk_overlap=20)
 
-Settings.embed_model = embed_model
+# 全局配置
 Settings.llm = llm
-Settings.node_parser = SentenceSplitter(chunk_size=250, chunk_overlap=20) # 50, 100, 250将得到不同的结果，为什么？
+Settings.embed_model = embed_model
+Settings.node_parser = node_parser
 
 # Load PDF using standard PDFReader
 loader = PDFReader()
