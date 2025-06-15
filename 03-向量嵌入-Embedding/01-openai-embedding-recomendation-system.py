@@ -1,4 +1,6 @@
-import os
+from sentence_transformers import SentenceTransformer
+import torch
+
 import openai
 import pandas as pd
 import numpy as np
@@ -6,19 +8,27 @@ import json
 from sklearn.metrics.pairwise import cosine_similarity
 
 # 读取用户评价数据集
-df = pd.read_csv("data/灭神纪/用户评论.csv")
+df = pd.read_csv("90-文档-Data/灭神纪/用户评价.csv")
 
 # 读取游戏描述文件
-with open("data/灭神纪/游戏说明.json", "r") as f:
+with open("90-文档-Data/灭神纪/游戏说明.json", "r") as f:
     game_descriptions = json.load(f)
 
 # 定义函数获取嵌入向量
-def get_embedding(text, model="text-embedding-3-small"):
-    response = openai.embeddings.create(
-        input=[text],
-        model=model
-    )
-    return response.data[0].embedding
+
+
+def get_embedding(text, model_name="BAAI/bge-m3"):
+    # 初始化模型，只需要初始化一次即可
+    if not hasattr(get_embedding, "model"):
+        get_embedding.model = SentenceTransformer(
+            model_name,
+            device='cuda:0' if torch.cuda.is_available() else 'cpu',
+            trust_remote_code=True
+        )
+
+    # 获取文本嵌入
+    embedding = get_embedding.model.encode(text, normalize_embeddings=True)
+    return embedding.tolist()  # 转换为列表以保持与原函数相同的返回类型
 
 # 获取所有游戏的嵌入向量
 unique_games = df['game_title'].unique().tolist()

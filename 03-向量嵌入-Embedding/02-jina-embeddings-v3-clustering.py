@@ -11,7 +11,7 @@ headers = {
 }
 
 # 2. 读取游戏描述数据
-df = pd.read_csv("data/灭神纪/游戏描述.csv")
+df = pd.read_csv("90-文档-Data/灭神纪/游戏描述.csv")
 texts = df['description'].tolist()
 
 # 3. 获取文本嵌入
