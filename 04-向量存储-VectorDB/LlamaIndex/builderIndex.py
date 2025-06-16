@@ -1,3 +1,4 @@
+import os
 from llama_index.core import SimpleDirectoryReader
 from llama_index.core import VectorStoreIndex
 from llama_index.core.node_parser import SentenceSplitter
@@ -15,7 +16,7 @@ index = VectorStoreIndex.from_documents(
     documents=documents,
     embed_model=embed_model
 )
-print(index, "--"*10)
+print(vars(index))
 
 # 查看Nodes
 nodes = index.index_struct.nodes_dict
@@ -34,4 +35,5 @@ for node in nodes:
     print(node)
 
 # 保存索引到磁盘
-index.storage_context.persist(persist_dir="saved_index")
+index.storage_context.persist(
+    persist_dir=f"{os.path.dirname(__file__)}/saved_index")
