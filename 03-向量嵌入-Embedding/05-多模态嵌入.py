@@ -3,7 +3,7 @@
 """
 
 import torch
-from visual_bge.modeling import Visualized_BGE  # type: ignore
+from visual_bge.modeling import Visualized_BGE
 from PIL import Image
 import numpy as np
 
