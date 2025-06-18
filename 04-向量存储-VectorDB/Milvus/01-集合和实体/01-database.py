@@ -13,7 +13,7 @@ Creating milvus-standalone ... done
 
 '''
 
-from pymilvus import MilvusClient, exceptions
+from pymilvus import MilvusClient
 
 # ——————————————
 # 1. 连接 Milvus Standalone
@@ -31,17 +31,21 @@ client = MilvusClient(
 try:
     client.create_database(db_name="my_database_1")
     print("✓ my_database_1 创建成功")
-except exceptions.AlreadyExistError:
+except Exception as e:
+    print(e)
     print("ℹ my_database_1 已存在")
 
 # ——————————————
 # 3. 创建数据库 my_database_2（设置副本数为 3）
 # ——————————————
-client.create_database(
-    db_name="my_database_2",
-    properties={"database.replica.number": 3}
-)
-print("✓ my_database_2 创建成功，副本数=3")
+try:
+    client.create_database(
+        db_name="my_database_2",
+        properties={"database.replica.number": 3}
+    )
+    print("✓ my_database_2 创建成功，副本数=3")
+except Exception as e:
+    ...
 
 # ——————————————
 # 4. 列出所有数据库
