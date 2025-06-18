@@ -152,6 +152,9 @@ client.drop_alias(alias="alias3")
 print("✓ 已删除 alias3")
 print("剩余 aliases：", client.list_aliases(new_collection_name))
 
+client.drop_alias(alias="alias4")
+print("✓ 已删除 alias4")
+print("剩余 aliases：", client.list_aliases(new_collection_name))
 # ——————————————
 # 11. 删除 Collection
 # ——————————————
