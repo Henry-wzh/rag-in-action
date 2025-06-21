@@ -35,7 +35,7 @@ class WukongEncoder:
 
 # 初始化编码器
 model_name = "BAAI/bge-m3"
-model_path = "./Visualized_m3.pth"
+model_path = "../Visualized_m3.pth"
 encoder = WukongEncoder(model_name, model_path)
 
 # ==================== 2. 数据集管理 ====================

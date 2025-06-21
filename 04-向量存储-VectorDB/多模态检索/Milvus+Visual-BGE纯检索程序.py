@@ -136,7 +136,7 @@ def print_results(results: List[dict]):
 if __name__ == "__main__":
     # 初始化编码器（根据需要换中文模型）
     model_name = "BAAI/bge-base-en-v1.5"
-    model_path = "./Visualized_base_en_v1.5.pth"
+    model_path = "../Visualized_base_en_v1.5.pth"
     encoder = WukongEncoder(model_name, model_path)
     
     # 初始化检索器
