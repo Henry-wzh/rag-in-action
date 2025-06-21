@@ -90,7 +90,8 @@ print(f"成功编码 {len(image_dict)} 张图片")
 # ==================== 4. Milvus向量库设置 ====================
 # 连接/创建Milvus数据库
 collection_name = "wukong_scenes"
-milvus_client = MilvusClient(uri="./wukong_images.db")
+uri = "./wukong_images.db"
+milvus_client = MilvusClient(uri=uri)
 
 # 创建向量集合
 dim = len(list(image_dict.values())[0])
@@ -248,3 +249,6 @@ for idx, result in enumerate(results):
 
 # 可视化结果
 visualize_results(query_image, results, "search_results.jpg")
+print("清理数据")
+print(milvus_client.drop_collection(collection_name))
+print("清理完成")

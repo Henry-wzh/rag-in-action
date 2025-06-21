@@ -1,7 +1,6 @@
 # 准备示例数据集
 import pandas as pd
-from pymilvus import MilvusClient, DataType, FieldSchema, CollectionSchema
-from pymilvus.model.dense import SentenceTransformerEmbeddingFunction
+from pymilvus import MilvusClient, DataType, FieldSchema, CollectionSchema, model
 
 data_records = [
     {
@@ -28,7 +27,8 @@ client = MilvusClient(db_path)
 collection_name = "Wukong_Monsters"
 
 # 获取嵌入模型的向量维度
-embedding_function = SentenceTransformerEmbeddingFunction(model_name='BAAI/bge-large-zh')
+embedding_function = model.dense.SentenceTransformerEmbeddingFunction(
+    model_name='BAAI/bge-large-zh')
 sample_embedding = embedding_function(["示例文本"])[0]
 vector_dim = len(sample_embedding)
 

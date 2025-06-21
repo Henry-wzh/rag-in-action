@@ -250,3 +250,8 @@ for idx, result in enumerate(results):
 
 # 可视化结果
 visualize_results(query_image, results, "search_results.jpg")
+
+# clean 清理
+print("清理数据")
+print(milvus_client.drop_collection(collection_name))
+print("清理完成")
