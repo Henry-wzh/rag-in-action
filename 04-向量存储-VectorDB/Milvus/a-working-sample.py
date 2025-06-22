@@ -31,7 +31,7 @@ embedding_function = model.dense.SentenceTransformerEmbeddingFunction(
     model_name='BAAI/bge-large-zh')
 sample_embedding = embedding_function(["示例文本"])[0]
 vector_dim = len(sample_embedding)
-
+print("sample_embedding: ", sample_embedding)
 # 定义集合模式并创建集合
 fields = [
     FieldSchema(name="id", dtype=DataType.INT64, is_primary=True, auto_id=True),
@@ -62,28 +62,55 @@ client.create_index(
 
 # 批量插入数据
 from tqdm import tqdm
-for start_idx in tqdm(range(0, len(df)), desc="插入数据"):
-    row = df.iloc[start_idx]    
-    # 准备向量文本
-    doc_parts = [str(row['monster_name'])]
-    if row['synonyms']:
-        doc_parts.append(f"(别名：{row['synonyms']})")
-    if row['location']:
-        doc_parts.append(f"场景：{row['location']}")
-    if row['description']:
-        doc_parts.append(f"描述：{row['description']}")
-    doc_text = "；".join(doc_parts)    
+# for start_idx in tqdm(range(0, len(df)), desc="插入数据"):
+#     row = df.iloc[start_idx]
+#     # 准备向量文本
+#     doc_parts = [str(row['monster_name'])]
+#     if row['synonyms']:
+#         doc_parts.append(f"(别名：{row['synonyms']})")
+#     if row['location']:
+#         doc_parts.append(f"场景：{row['location']}")
+#     if row['description']:
+#         doc_parts.append(f"描述：{row['description']}")
+
+#     doc_text = "；".join(doc_parts)
+#     # 生成向量并插入数据
+#     embedding = embedding_function([doc_text])[0]
+
+#     data_to_insert = [{
+#         "vector": embedding,
+#         "monster_id": str(row["monster_id"]),
+#         "monster_name": str(row["monster_name"]),
+#         "location": str(row["location"]),
+#         "difficulty": str(row["difficulty"]),
+#         "synonyms": str(row["synonyms"]),
+#         "description": str(row["description"])
+#     }]
+#     client.insert(collection_name=collection_name, data=data_to_insert)
+
+for row in tqdm(df.itertuples(), desc="插入数据", total=len(df)):
+    print("row: ", row.index)
+    doc_parts = [row.monster_name]
+    if row.synonyms:
+        doc_parts.append(f"(别名：{row.synonyms})")
+    if row.location:
+        doc_parts.append(f"场景：{row.location}")
+    if row.description:
+        doc_parts.append(f"描述：{row.description}")
+
+    doc_text = "；".join(doc_parts)
     # 生成向量并插入数据
     embedding = embedding_function([doc_text])[0]
+
     data_to_insert = [{
         "vector": embedding,
-        "monster_id": str(row["monster_id"]),
-        "monster_name": str(row["monster_name"]),
-        "location": str(row["location"]),
-        "difficulty": str(row["difficulty"]),
-        "synonyms": str(row["synonyms"]),
-        "description": str(row["description"])
-    }]    
+        "monster_id": row.monster_id,
+        "monster_name": row.monster_name,
+        "location": row.location,
+        "difficulty": row.difficulty,
+        "synonyms": row.synonyms,
+        "description": row.description
+    }]
     client.insert(collection_name=collection_name, data=data_to_insert)
 
 # 测试搜索
