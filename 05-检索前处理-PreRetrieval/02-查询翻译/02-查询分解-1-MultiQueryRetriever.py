@@ -9,7 +9,7 @@ from langchain.retrievers.multi_query import MultiQueryRetriever # 多角度查�
 logging.basicConfig()
 logging.getLogger("langchain.retrievers.multi_query").setLevel(logging.INFO)
 # 加载游戏相关文档并构建向量数据库
-loader = TextLoader("90-文档-Data/黑悟空/黑悟空设定.txt", encoding='utf-8')
+loader = TextLoader("90-文档-Data/黑悟空/设定.txt", encoding='utf-8')
 data = loader.load()
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
 splits = text_splitter.split_documents(data)

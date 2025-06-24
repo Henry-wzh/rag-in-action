@@ -9,7 +9,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 logging.basicConfig()
 logging.getLogger("langchain.retrievers.re_phraser").setLevel(logging.INFO)
 # 加载游戏文档数据
-loader = TextLoader("90-文档-Data/黑悟空/黑悟空设定.txt", encoding='utf-8')
+loader = TextLoader("90-文档-Data/黑悟空/设定.txt", encoding='utf-8')
 data = loader.load()
 # 文本分块
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
